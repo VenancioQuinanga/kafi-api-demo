@@ -9,8 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import ao.kafi.api.dto.CriarProdutoRequest;
+import ao.kafi.api.dto.ProdutoResponse;
 import ao.kafi.api.exception.ProdutoNaoEncontradoException;
+import ao.kafi.api.mapper.ProdutoMapper;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -39,15 +42,16 @@ public class ProdutoController {
     }
 
     @PostMapping
-    public ResponseEntity<Produto> criar(
+    public ResponseEntity<ProdutoResponse> criar(
             @Valid @RequestBody CriarProdutoRequest pedido) {
 
-        Produto produto = produtoService.criar(pedido);
+        Produto criado = produtoService.criar(pedido);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(produto);
+        return ResponseEntity
+            .created(URI.create("/api/produtos/" + criado.getId()))
+            .body(ProdutoMapper.paraResponse(criado));
     }
-    
+        
     @DeleteMapping 
     public void Deletar(@PathVariable Long id){
         
